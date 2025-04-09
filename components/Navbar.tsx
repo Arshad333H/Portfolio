@@ -3,16 +3,15 @@ import { FloatingDock } from "@/components/ui/floating-dock";
 import {
   IconBrandGithub,
   IconBrandX,
-  IconExchange,
   IconHome,
   IconNewSection,
   IconTerminal2,
   
 } from "@tabler/icons-react";
 
-import Image from "next/image";
 import { FaLinkedin } from "react-icons/fa";
 import { SiGmail } from "react-icons/si";
+import { ModeToggle } from "./Theme";
 
 
 export function Navbar() {
@@ -75,6 +74,7 @@ export function Navbar() {
         mobileClassName="mb-12 w-full flex justify-end" // only for demo, remove for production
         items={links}
       />
+      <ModeToggle/>
     </div>
   );
 }

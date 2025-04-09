@@ -1,6 +1,5 @@
 import React from 'react'
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { Navbar } from './Navbar';
 import { TextGenerateEffect } from './ui/text-generate-effect';
 
 
