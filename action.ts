@@ -133,15 +133,18 @@ export async function deleteProjectAction(formData: FormData) {
   if (!user || user.email !== "skmohammedarshad333@gmail.com") {
     return redirect("/");
   }
-  const projectId = formData.get("projecttId") as string|FormDataEntryValue[] ;
+
+  const projectId = formData.get("projecttId");
+
   if (typeof projectId !== "string") {
     throw new Error("Invalid project ID");
   }
+
   await prisma.project.delete({
     where: {
-      id: formData.get("projecttId"),
+      id: projectId,
     },
   });
 
-  redirect("/admin/projects");
+  return redirect("/admin/projects");
 }
