@@ -1,0 +1,35 @@
+
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Project {
+  id               String   @id @default(cuid())
+  
+  title            String
+  description      String
+  longDescription  String
+  images           String[] // Array of image paths
+  githubUrl        String?
+  liveUrl          String?
+  features         String[] // Array of features
+  tags             String[] // Array of tags
+  domain           ProjectDomain @default(WEB)
+  technologies     String[] // Array of technologies
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("projects")
+}
+
+enum ProjectDomain {
+  WEB
+  ML
+  AI_ML
+  DS
+}
