@@ -1,11 +1,12 @@
+import Link from "next/link";
 
 const ProjectsAndCertificates = async () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center p-6 gap-10">
       {/* Projects Card */}
-      <a
-        href="/projects"
+      <Link
+        href="/admin/projects"
         className="group w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
       >
         <div className="relative bg-gradient-to-br from-indigo-600 to-purple-700 p-16 text-center">
@@ -17,11 +18,11 @@ const ProjectsAndCertificates = async () => {
             <span className="inline-block h-1 w-16 bg-white/50 group-hover:w-24 transition-all duration-300"></span>
           </div>
         </div>
-      </a>
+      </Link>
 
       {/* Certificates Card */}
-      <a
-        href="/certificates"
+      <Link
+        href="/admin/certificates"
         className="group w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
       >
         <div className="relative bg-gradient-to-br from-emerald-600 to-teal-700 p-16 text-center">
@@ -33,7 +34,7 @@ const ProjectsAndCertificates = async () => {
             <span className="inline-block h-1 w-16 bg-white/50 group-hover:w-24 transition-all duration-300"></span>
           </div>
         </div>
-      </a>
+      </Link>
     </div>
   );
 };

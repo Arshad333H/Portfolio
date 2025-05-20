@@ -11,7 +11,7 @@ const Navbar = () => {
             <img
               src="/logo.png"
               alt="Portfolio Logo"
-              className="h-15 w-20 md:h-15 md:w-20 ml-5 object-contain filter brightness-1 sepia-1 hue-rotate-190 saturate-2"
+              className="h-15 hidden w-20 md:flex md:h-15 md:w-25 ml-5 object-contain filter brightness-1 sepia-1 hue-rotate-190 saturate-2"
             />
           </div>
 

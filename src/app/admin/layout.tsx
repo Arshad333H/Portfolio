@@ -1,7 +1,9 @@
 import React from 'react'
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
-import Navbar from '../components/Navbar';
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 
 const layout = async({
@@ -16,7 +18,6 @@ const layout = async({
   }
   return (
     <div className="w-full max-w-6xl mx-auto">
-            <Navbar />
             {children}
           </div>
   )

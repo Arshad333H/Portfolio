@@ -16,15 +16,14 @@ export const ProjectSchema = z.object({
     .string()
     .url("Must be a valid URL")
     .startsWith("https://github.com/", "Must be a GitHub URL")
+    .optional()
     .or(z.literal("")),
-  liveUrl: z.string().url("Must be a valid URL").or(z.literal("")),
-  tags: z.array(
-    z.string().min(1).max(30).min(1, "At least one tag is required")
-  ),
+  liveUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  tags: z.union([z.string(), z.array(z.string())]),
+  technologies: z.union([z.string(), z.array(z.string())]),
   features: z.array(
     z.string().min(1).max(100).min(1, "At least one feature is required")
   ),
-  technologies: z.array(
-    z.string().min(1).max(50).min(1, "At least one technology is required")
-  ),
+
+  domain: z.enum(["WEB", "ML", "AI_ML", "DS"]).default("WEB"),
 });

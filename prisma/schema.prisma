@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -22,11 +17,19 @@ model Project {
   images           String[] // Array of image paths
   githubUrl        String?
   liveUrl          String?
-  tags             String[] // Array of tags
   features         String[] // Array of features
+  tags             String[] // Array of tags
+  domain           ProjectDomain @default(WEB)
   technologies     String[] // Array of technologies
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@map("projects")
+}
+
+enum ProjectDomain {
+  WEB
+  ML
+  AI_ML
+  DS
 }

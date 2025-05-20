@@ -3,7 +3,15 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./AuthProvider";
-
+import { connection } from "next/server"; 
+import { Suspense } from "react"; 
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
+async function UTSSR() {
+  await connection(); 
+  return <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+}
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,9 +38,12 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
+          <Suspense> <UTSSR /></Suspense>
           <div className="w-full max-w-6xl mx-auto">
-            <Navbar />
+            <Navbar />  
+          <div className="w-full max-w-[1100px] mx-auto">
             {children}
+          </div>
           </div>
         </body>
       </html>
