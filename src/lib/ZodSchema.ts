@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const ProjectSchema = z.object({
-  id: z.string().cuid().optional(),
   title: z.string().min(1, "Title is required").max(100),
   description: z.string().min(1, "Description is required").max(200),
   longDescription: z.string().min(1, "Long description is required").max(2000),
