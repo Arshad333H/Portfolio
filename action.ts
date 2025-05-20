@@ -133,7 +133,7 @@ export async function deleteProjectAction(formData: FormData) {
   if (!user || user.email !== "skmohammedarshad333@gmail.com") {
     return redirect("/");
   }
-  const projectId = formData.get("projecttId") as string|null;
+  const projectId = formData.get("projecttId") as string|undefined;
   if (typeof projectId !== "string") {
     throw new Error("Invalid project ID");
   }
