@@ -6,12 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
-    "lint": "next lint"
-=======
     "lint": "next lint",
     "postinstall": "prisma generate"
->>>>>>> 354bb0b (Solved Error)
   },
   "dependencies": {
     "@conform-to/react": "^1.6.0",

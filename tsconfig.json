@@ -1,15 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-<<<<<<< HEAD
     "lib": ["dom", "dom.iterable", "esnext"],
-=======
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
->>>>>>> 354bb0b (Solved Error)
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -27,13 +19,7 @@
       }
     ],
     "paths": {
-<<<<<<< HEAD
       "@/*": ["./src/*"]
-=======
-      "@/*": [
-        "./src/*"
-      ]
->>>>>>> 354bb0b (Solved Error)
     }
   },
   "include": [
@@ -45,12 +31,5 @@
     "src/app/api/auth/kinde_callback",
     ".next/types/**/*.ts"
   ],
-<<<<<<< HEAD
   "exclude": ["node_modules", ".next"]
-=======
-  "exclude": [
-    "node_modules",
-    ".next"
-  ]
->>>>>>> 354bb0b (Solved Error)
 }
