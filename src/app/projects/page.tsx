@@ -22,7 +22,7 @@ const item = {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-8">My Projects</h1>
-      <div className="grid grid-cols-1 mx-5 md:mx-0 sm:grid-cols-2 md:space-y-5 md:grid-cols-3 gap-6 ">
+      <div className="grid grid-cols-1 mx-5 md:mx-0 sm:grid-cols-2 md:space-y-5 md:grid-cols-2 gap-6 ">
       {
         data.map((items)=>(
           <ProjectCard project={items} key={items.id} />
