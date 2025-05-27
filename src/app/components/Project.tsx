@@ -4,6 +4,8 @@ import React from "react";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Image from "next/image";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Project {
   id: string;
@@ -82,28 +84,33 @@ export function ThreeDCardDemo({ project }: Props) {
           </CardItem>
 
           {/* Right side buttons (GitHub & Live Preview) */}
-          <div className="flex gap-4">
-            <CardItem
-              translateZ={20}
-              as="a"
-              href="https://github.com/your-username/your-repo"
-              target="_blank"
-              className=" flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-            >
-                
-              <FaGithub /> GitHub Repo
-            </CardItem>
+          {(project.githubUrl || project.liveUrl) && (
+            <div className="flex gap-4 mt-4">
+              {project.githubUrl && (
+                <CardItem
+                  translateZ={20}
+                  as="a"
+                  href={project.githubUrl}
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                >
+                  <FaGithub /> GitHub Repo
+                </CardItem>
+              )}
 
-            <CardItem
-              translateZ={20}
-              as="a"
-              href="https://your-live-url.com"
-              target="_blank"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-            >
-              <FaExternalLinkAlt /> Live Preview
-            </CardItem>
-          </div>
+              {project.liveUrl && (
+                <CardItem
+                  translateZ={20}
+                  as="a"
+                  href={project.liveUrl}
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                >
+                  <FaExternalLinkAlt /> Live Preview
+                </CardItem>
+              )}
+            </div>
+          )}
         </div>
       </CardBody>
     </CardContainer>
