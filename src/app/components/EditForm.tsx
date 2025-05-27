@@ -152,7 +152,7 @@ const EditForm = ({ data }: projectProps) => {
             action={action}
             className="p-8 space-y-8"
           >
-            <input type="hidden" value={data.id} name="projecttId" />
+            <input type="hidden" value={data.id} name="projectId" />
             <div className="space-y-8">
               {/* Basic Info Card */}
               <motion.div

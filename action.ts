@@ -134,7 +134,7 @@ export async function deleteProjectAction(formData: FormData) {
     return redirect("/");
   }
 
-  const projectId = formData.get("projecttId");
+  const projectId = formData.get("projectId");
 
   if (typeof projectId !== "string") {
     throw new Error("Invalid project ID");
