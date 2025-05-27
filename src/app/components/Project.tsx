@@ -86,19 +86,7 @@ export function ThreeDCardDemo({ project }: Props) {
           {/* Right side buttons (GitHub & Live Preview) */}
           {(project.githubUrl || project.liveUrl) && (
             <div className="flex gap-4 mt-4">
-              {project.githubUrl && (
-                <CardItem
-                  translateZ={20}
-                  as="a"
-                  href={project.githubUrl}
-                  target="_blank"
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-                >
-                  <FaGithub /> GitHub Repo
-                </CardItem>
-              )}
-
-              {project.liveUrl && (
+              {project.liveUrl ? (
                 <CardItem
                   translateZ={20}
                   as="a"
@@ -108,6 +96,18 @@ export function ThreeDCardDemo({ project }: Props) {
                 >
                   <FaExternalLinkAlt /> Live Preview
                 </CardItem>
+              ) : (
+                project.githubUrl && (
+                  <CardItem
+                    translateZ={20}
+                    as="a"
+                    href={project.githubUrl}
+                    target="_blank"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                  >
+                    <FaGithub /> GitHub Repo
+                  </CardItem>
+                )
               )}
             </div>
           )}

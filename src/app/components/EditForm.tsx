@@ -129,7 +129,7 @@ const EditForm = ({ data }: projectProps) => {
                 transition={{ delay: 0.2 }}
                 className="text-3xl font-bold tracking-tight"
               >
-                Create New Project
+                Edit Project
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
@@ -581,7 +581,7 @@ const EditForm = ({ data }: projectProps) => {
                   ) : (
                     <Rocket className="mr-2 h-4 w-4" />
                   )}
-                  {isSubmitting ? "Launching..." : "Create Project"}
+                  {isSubmitting ? "Launching..." : "Edit Project"}
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>

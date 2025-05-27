@@ -349,11 +349,10 @@ const UploadProject = () => {
                         className="block w-full rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-400 focus:border-pink-300 shadow-sm transition-all hover:border-pink-300 appearance-none"
                       >
                         <option value="">Select a domain</option>
-                        <option value="web">Web Development</option>
+                        <option value="WEB">Web Development</option>
                         <option value="ML">Machine Learning</option>
                         <option value="AI_ML">AI/ML</option>
-
-                        <option value="data-science">Data Science</option>
+                        <option value="DS">Data Science</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
                         <svg
