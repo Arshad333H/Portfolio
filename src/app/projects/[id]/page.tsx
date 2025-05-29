@@ -1,13 +1,13 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
-import React from 'react'
-import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import prisma from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import React from "react";
+import { FaExternalLinkAlt, FaGithub } from "react-icons/fa";
 
-async function getData(projectId:string){
-const data = await prisma.project.findUnique({
+async function getData(projectId: string) {
+  const data = await prisma.project.findUnique({
     where: {
       id: projectId,
     },
@@ -18,8 +18,8 @@ const data = await prisma.project.findUnique({
   return data;
 }
 
-const ProjectDetails = async({params}:{params:{id:string}}) => {
-    const project =await getData(params.id as string)
+const ProjectDetails = async ({ params }: { params: { id: string } }) => {
+  const project = await getData(params.id as string);
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
       {/* Hero Image */}
@@ -34,7 +34,9 @@ const ProjectDetails = async({params}:{params:{id:string}}) => {
       {/* Title & Description */}
       <div>
         <h1 className="text-4xl font-bold">{project.title}</h1>
-        <p className="text-muted-foreground mt-2 text-lg">{project.description}</p>
+        <p className="text-muted-foreground mt-2 text-lg">
+          {project.description}
+        </p>
       </div>
 
       {/* Links */}
@@ -42,14 +44,22 @@ const ProjectDetails = async({params}:{params:{id:string}}) => {
         <div className="flex gap-4">
           {project.liveUrl ? (
             <Button asChild variant="default">
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaExternalLinkAlt className="mr-2" /> Live Preview
               </a>
             </Button>
           ) : (
             project.githubUrl && (
               <Button asChild variant="secondary">
-                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaGithub className="mr-2" /> GitHub Repo
                 </a>
               </Button>
@@ -103,7 +113,7 @@ const ProjectDetails = async({params}:{params:{id:string}}) => {
         {new Date(project.updatedAt).toLocaleDateString()}
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default ProjectDetails
+export default ProjectDetails;
