@@ -1,6 +1,6 @@
 async function uploadFileToS3(file: File) {
   // Step 1: Request a signed URL
-  const res = await fetch("/api/upload-url", {
+  const res = await fetch("/api/upload", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
