@@ -1,3 +1,4 @@
+import { ProjectMediaGallery } from "@/app/components/ProjectMediaGallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,6 +31,11 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
           className="w-full h-64 object-cover rounded-2xl shadow-md"
         />
       )}
+      <ProjectMediaGallery 
+        images={project.images || []} 
+        videoUrl="/blackhole.webm"
+        title={project.title} 
+      />
 
       {/* Title & Description */}
       <div>

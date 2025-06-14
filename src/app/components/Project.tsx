@@ -58,13 +58,13 @@ export function ThreeDCardDemo({ project }: Props) {
           translateZ="60"
           className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
         >
-          <span className="font-bold text-neutral-600 dark:text-white">
+          <span className="font-bold text-neutral-600 dark:text-white ">
             Tech:
           </span>{" "}
           {project.technologies.map((tech) => (
             <span
               key={tech}
-              className="bg-gray-100 text-xs px-2 py-1 rounded text-gray-700"
+              className="bg-gray-100 text-xs mr- px-4 py-1 rounded text-gray-700"
             >
               {tech}
             </span>
