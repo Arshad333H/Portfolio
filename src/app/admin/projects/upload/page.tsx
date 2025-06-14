@@ -70,6 +70,12 @@ const UploadProject = () => {
       });
 
       const res = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            setVideoProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        });
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4) {
             if (xhr.status === 200) {
@@ -112,8 +118,18 @@ const UploadProject = () => {
           initial={{ y: 20, rotate: -5 }}
           animate={{ y: 0, rotate: 5 }}
           transition={{
-            y: { duration: 2.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" },
-            rotate: { duration: 3.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }
+            y: {
+              duration: 2.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            },
+            rotate: {
+              duration: 3.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            },
           }}
           className="relative"
         >
@@ -131,7 +147,12 @@ const UploadProject = () => {
                   y: [0, -40],
                   x: Math.random() > 0.5 ? [0, 20] : [0, -20],
                 }}
-                transition={{ duration: 3, repeat: Infinity, delay: i * 0.3, ease: "easeOut" }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: "easeOut",
+                }}
                 className="absolute text-yellow-400"
                 style={{
                   top: `${Math.random() * 60 + 20}%`,
@@ -179,7 +200,12 @@ const UploadProject = () => {
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/5 rounded-full -ml-16 -mb-16"></div>
           </div>
 
-          <form id={form.id} onSubmit={form.onSubmit} action={action} className="p-8 space-y-8">
+          <form
+            id={form.id}
+            onSubmit={form.onSubmit}
+            action={action}
+            className="p-8 space-y-8"
+          >
             <div className="space-y-8">
               {/* Basic Info Section */}
               <motion.div
@@ -197,7 +223,10 @@ const UploadProject = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor={fields.title.id} className="block text-sm font-medium text-gray-700/90 mb-2.5">
+                    <Label
+                      htmlFor={fields.title.id}
+                      className="block text-sm font-medium text-gray-700/90 mb-2.5"
+                    >
                       Title <span className="text-red-400">*</span>
                     </Label>
                     <Input
@@ -223,7 +252,10 @@ const UploadProject = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={fields.description.id} className="block text-sm font-medium text-gray-700/90 mb-2.5">
+                    <Label
+                      htmlFor={fields.description.id}
+                      className="block text-sm font-medium text-gray-700/90 mb-2.5"
+                    >
                       Short Description <span className="text-red-400">*</span>
                     </Label>
                     <Textarea
@@ -250,8 +282,12 @@ const UploadProject = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={fields.longDescription.id} className="block text-sm font-medium text-gray-700/90 mb-2.5">
-                      Detailed Description <span className="text-red-400">*</span>
+                    <Label
+                      htmlFor={fields.longDescription.id}
+                      className="block text-sm font-medium text-gray-700/90 mb-2.5"
+                    >
+                      Detailed Description{" "}
+                      <span className="text-red-400">*</span>
                     </Label>
                     <Textarea
                       id={fields.longDescription.id}
@@ -294,7 +330,10 @@ const UploadProject = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor={fields.githubUrl.id} className="block text-sm font-medium text-gray-700/90 mb-2.5">
+                    <Label
+                      htmlFor={fields.githubUrl.id}
+                      className="block text-sm font-medium text-gray-700/90 mb-2.5"
+                    >
                       GitHub URL
                     </Label>
                     <Input
@@ -320,7 +359,10 @@ const UploadProject = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={fields.liveUrl.id} className="block text-sm font-medium text-gray-700/90 mb-2.5">
+                    <Label
+                      htmlFor={fields.liveUrl.id}
+                      className="block text-sm font-medium text-gray-700/90 mb-2.5"
+                    >
                       Live Demo URL
                     </Label>
                     <Input
@@ -363,7 +405,10 @@ const UploadProject = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="domain" className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5">
+                    <Label
+                      htmlFor="domain"
+                      className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
+                    >
                       Domain <span className="text-red-400">*</span>
                     </Label>
                     <div className="relative">
@@ -379,7 +424,11 @@ const UploadProject = () => {
                         <option value="DS">Data Science</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <svg
+                          className="h-4 w-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -404,8 +453,12 @@ const UploadProject = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={fields.tags.id} className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5">
-                      Tags <span className="text-red-400">*</span> (comma separated)
+                    <Label
+                      htmlFor={fields.tags.id}
+                      className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
+                    >
+                      Tags <span className="text-red-400">*</span> (comma
+                      separated)
                     </Label>
                     <Input
                       id={fields.tags.id}
@@ -431,14 +484,20 @@ const UploadProject = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={fields.technologies.id} className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5">
-                      Technologies <span className="text-red-400">*</span> (comma separated)
+                    <Label
+                      htmlFor={fields.technologies.id}
+                      className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
+                    >
+                      Technologies <span className="text-red-400">*</span>{" "}
+                      (comma separated)
                     </Label>
                     <Input
                       id={fields.technologies.id}
                       name={fields.technologies.name}
                       key={fields.technologies.key}
-                      defaultValue={fields.technologies.initialValue as string[]}
+                      defaultValue={
+                        fields.technologies.initialValue as string[]
+                      }
                       placeholder="React, TypeScript, Next.js, Tailwind CSS"
                       className="focus:ring-2 focus:ring-pink-400 border-gray-200 dark:border-gray-600 hover:border-pink-300 transition-all shadow-sm dark:bg-gray-700 dark:text-white"
                     />
@@ -576,20 +635,22 @@ const UploadProject = () => {
                   {/* Video Upload */}
                   <div className="flex flex-col gap-3">
                     <Label>Project Video</Label>
-                    
-                    <input 
+
+                    <input
                       type="hidden"
-                      value={video || ''}
+                      value={video || ""}
                       key={fields.video.key}
                       name={fields.video.name}
-                      defaultValue={fields.video.initialValue as string|undefined}
+                      defaultValue={
+                        fields.video.initialValue as string | undefined
+                      }
                     />
 
                     <div className="relative">
                       <label
                         htmlFor="video-upload"
                         className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                          video 
+                          video
                             ? "border-green-500 bg-green-50 hover:bg-green-100"
                             : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                         }`}
@@ -600,7 +661,9 @@ const UploadProject = () => {
                             {video ? "Video uploaded" : "Click to upload"}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {video ? "Replace video" : "MP4, MOV, AVI (MAX. 100MB)"}
+                            {video
+                              ? "Replace video"
+                              : "MP4, MOV, AVI (MAX. 100MB)"}
                           </p>
                         </div>
                         <input
@@ -612,19 +675,25 @@ const UploadProject = () => {
                           disabled={uploadingVideo}
                         />
                       </label>
-                      
+
                       {uploadingVideo && (
                         <div className="mt-2">
                           <Progress value={videoProgress} className="h-2" />
-                          <p className="text-xs text-gray-500 mt-1">Uploading... {videoProgress}%</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Uploading... {videoProgress}%
+                          </p>
                         </div>
                       )}
 
                       {fields.video.errors && (
-                        <p className="text-sm text-red-500 mt-2">{fields.video.errors}</p>
+                        <p className="text-sm text-red-500 mt-2">
+                          {fields.video.errors}
+                        </p>
                       )}
                       {videoError && (
-                        <p className="text-sm text-red-500 mt-2">{videoError}</p>
+                        <p className="text-sm text-red-500 mt-2">
+                          {videoError}
+                        </p>
                       )}
                     </div>
 
@@ -679,7 +748,11 @@ const UploadProject = () => {
                   {isSubmitting ? (
                     <motion.span
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                       className="mr-2"
                     >
                       <Rocket className="h-4 w-4" />
@@ -700,12 +773,22 @@ const UploadProject = () => {
       {/* Global styles */}
       <style jsx global>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
         }
         @keyframes float-delay {
-          0%, 100% { transform: translateY(5px); }
-          50% { transform: translateY(-5px); }
+          0%,
+          100% {
+            transform: translateY(5px);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
         }
         .animate-float {
           animation: float 6s ease-in-out infinite;
