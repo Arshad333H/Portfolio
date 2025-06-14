@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "api/upload": {
+      "maxDuration": 60,
+      "memory": 3008,
+      "maxBodySize": "200mb" 
+    }
+  }
+}
