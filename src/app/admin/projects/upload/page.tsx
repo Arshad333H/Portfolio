@@ -105,7 +105,8 @@ const UploadProject = () => {
       });
 
       // 3️⃣ Set the video URL after successful upload
-      const publicUrl = `https://${process.env.TIGRIS_S3_BUCKET}.fly.storage.tigris.dev/${key}`;
+      const publicUrl = `${process.env.BASE_VIDEO_URL}/${key}.mp4`;
+      console.log(publicUrl);
       setVideo(publicUrl);
     } catch (err) {
       console.error("Upload error:", err);

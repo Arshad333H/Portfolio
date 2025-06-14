@@ -33,7 +33,7 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
       )}
       <ProjectMediaGallery 
         images={project.images || []} 
-        videoUrl={project.video as string}
+        videoUrl={project.video || ""}
         title={project.title} 
       />
 
