@@ -105,7 +105,7 @@ const UploadProject = () => {
       });
 
       // 3️⃣ Set the video URL after successful upload
-      const publicUrl = `${process.env.BASE_VIDEO_URL}/${key}.mp4`;
+      const publicUrl = `${process.env.BASE_VIDEO_URL}/${key}`;
       console.log(publicUrl);
       setVideo(publicUrl);
     } catch (err) {
