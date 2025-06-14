@@ -33,7 +33,7 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
       )}
       <ProjectMediaGallery 
         images={project.images || []} 
-        videoUrl="/blackhole.webm"
+        videoUrl={project.video as string}
         title={project.title} 
       />
 
