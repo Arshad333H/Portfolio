@@ -56,7 +56,7 @@ export default function VideoUploadClient() {
             }
           }
         };
-        xhr.open("POST", "/api/upload", true);
+        xhr.open("POST", "/api/upload-url", true);
         xhr.send(formData);
       });
 
