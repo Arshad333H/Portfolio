@@ -49,39 +49,47 @@ const UploadProject = () => {
     if (!file) return;
 
     setVideoError(null);
-
-    // Validate file size (100MB max)
-    if (file.size > 200 * 1024 * 1024) {
-      setVideoError("File size exceeds 100MB limit");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
     setUploadingVideo(true);
     setVideoProgress(0);
 
+    // Validate file type
+    const ALLOWED_TYPES = ["video/mp4", "video/quicktime", "video/x-msvideo"];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setVideoError("Only MP4, MOV, AVI videos allowed");
+      setUploadingVideo(false);
+      return;
+    }
+
+    // Validate size (consistent message)
+    if (file.size > 200 * 1024 * 1024) {
+      setVideoError("File size exceeds 200MB limit");
+      setUploadingVideo(false);
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      formData.append("file", file);
+
       const xhr = new XMLHttpRequest();
+
       xhr.upload.addEventListener("progress", (event) => {
         if (event.lengthComputable) {
           setVideoProgress(Math.round((event.loaded / event.total) * 100));
         }
       });
 
-      const res = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", (event) => {
-          if (event.lengthComputable) {
-            setVideoProgress(Math.round((event.loaded / event.total) * 100));
-          }
-        });
+      const data = await new Promise((resolve, reject) => {
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-              resolve(JSON.parse(xhr.responseText));
+              try {
+                resolve(JSON.parse(xhr.responseText));
+              } catch (e) {
+                reject(new Error("Invalid server response"));
+              }
             } else {
-              reject(new Error(xhr.statusText));
+              reject(new Error(`Upload failed: ${xhr.statusText}`));
             }
           }
         };
@@ -89,18 +97,22 @@ const UploadProject = () => {
         xhr.send(formData);
       });
 
-      const data = res as { success: boolean; url: string; message?: string };
-      if (data.success) {
-        setVideo(data.url);
+      const { success, url, message } = data as {
+        success: boolean;
+        url: string;
+        message?: string;
+      };
+
+      if (success) {
+        setVideo(url);
       } else {
-        setVideoError(data.message || "Upload failed");
+        throw new Error(message || "Upload failed");
       }
     } catch (err) {
       console.error("Upload error:", err);
-      setVideoError("Upload failed. Please try again.");
+      setVideoError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploadingVideo(false);
-      setVideoProgress(0);
     }
   };
 
@@ -669,7 +681,7 @@ const UploadProject = () => {
                         <input
                           id="video-upload"
                           type="file"
-                          accept="video/*"
+                          accept="video/mp4,video/quicktime,video/x-msvideo"
                           onChange={handleVideoUpload}
                           className="hidden"
                           disabled={uploadingVideo}

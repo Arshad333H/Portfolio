@@ -1,6 +1,6 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const s3 = new S3Client({
   region: process.env.TIGRIS_S3_REGION || 'auto',
@@ -14,6 +14,7 @@ const s3 = new S3Client({
 
 export async function POST(request: Request) {
   try {
+    // 1. Get FormData (not JSON)
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
 
@@ -24,25 +25,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // 2. Process file upload
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileName = `uploads/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
 
-    // Explicitly type the upload parameters
-    const uploadParams: PutObjectCommandInput = {
+    await s3.send(new PutObjectCommand({
       Bucket: process.env.TIGRIS_S3_BUCKET,
       Key: fileName,
       Body: buffer,
       ContentType: file.type,
       ACL: 'public-read',
-      // Add metadata if needed
-      Metadata: {
-        'original-filename': file.name,
-        'content-type': file.type,
-      }
-    };
-
-    // Now TypeScript knows the exact shape of uploadParams
-    await s3.send(new PutObjectCommand(uploadParams));
+    }));
 
     const fileUrl = `${process.env.TIGRIS_S3_ENDPOINT}/${process.env.TIGRIS_S3_BUCKET}/${fileName}`;
     
@@ -62,7 +55,6 @@ export async function POST(request: Request) {
 
 export const config = {
   api: {
-    bodyParser: false,
-    sizeLimit:"200mb"
+    bodyParser: false, // Required for file uploads
   },
 };

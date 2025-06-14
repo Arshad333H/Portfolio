@@ -1,17 +1,28 @@
-import { S3Client } from "@aws-sdk/client-s3";
+async function uploadFileToS3(file: File) {
+  // Step 1: Request a signed URL
+  const res = await fetch("/api/upload-url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fileName: file.name,
+      fileType: file.type,
+    }),
+  });
 
-export const s3 = new S3Client({
-  tls: true,
-  region: process.env.TIGRIS_S3_REGION || "auto",
-  endpoint: process.env.TIGRIS_S3_ENDPOINT || "https://t3.storage.dev",
-  credentials: {
-    accessKeyId: process.env.TIGRIS_S3_ACCESS_KEY || "",
-    secretAccessKey: process.env.TIGRIS_S3_SECRET_KEY || "",
-  },
-  requestHandler: {
-    tls: {
-      rejectUnauthorized: true, // Enforces SSL cert validation
+  const { url, publicUrl } = await res.json();
+
+  // Step 2: Upload file directly to S3
+  const upload = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
     },
-    forcePathStyle: true,
-  },
-});
+    body: file,
+  });
+
+  if (!upload.ok) {
+    throw new Error("Upload to S3 failed");
+  }
+
+  return publicUrl; // You can now use/display this file
+}
