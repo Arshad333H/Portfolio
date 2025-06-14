@@ -59,7 +59,11 @@ export async function createProjectAction(
       tags: flattenTags,
       technologies: flattenTechnologies,
       domain: submission.value.domain,
+      video:submission.value.video
+    
+      
     },
+    
   });
 
   return redirect("/admin/projects");
@@ -121,6 +125,7 @@ export async function EditProjectAction(
       tags: normalizeArray(submission.value.tags),
       technologies: normalizeArray(submission.value.technologies),
       domain: submission.value.domain,
+      video:submission.value.video
     },
   });
   return redirect("/admin/projects");

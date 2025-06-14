@@ -6,7 +6,7 @@ import { ProjectSchema } from "@/lib/ZodSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { XIcon, Rocket, Sparkles } from "lucide-react";
+import { XIcon, Rocket, Sparkles, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { EditProjectAction } from "@/../action";
 import { FiAlertCircle } from "react-icons/fi";
 import { type $Enums } from "@prisma/client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface projectProps {
   data: {
@@ -28,10 +30,15 @@ interface projectProps {
     tags: string[];
     domain: $Enums.ProjectDomain;
     technologies: string[];
+    video: string | undefined | null;
   };
 }
 
 const EditForm = ({ data }: projectProps) => {
+  const [video, setVideo] = useState<string | null>(data.video || null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const [lastResult, action] = useActionState(EditProjectAction, undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<string[]>(data.images);
@@ -43,19 +50,79 @@ const EditForm = ({ data }: projectProps) => {
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
-  const handleDelete = (index: number) => {
+
+  const handleDeleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  const handleDeleteVideo = () => {
+    setVideo(null);
+    setVideoError(null);
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setVideoError(null);
+
+    // Validate file size (100MB max)
+    if (file.size > 100 * 1024 * 1024) {
+      setVideoError("File size exceeds 100MB limit");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    setUploadingVideo(true);
+    setVideoProgress(0);
+
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          setVideoProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      });
+
+      const res = await new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              resolve(JSON.parse(xhr.responseText));
+            } else {
+              reject(new Error(xhr.statusText));
+            }
+          }
+        };
+        xhr.open("POST", "/api/upload", true);
+        xhr.send(formData);
+      });
+
+      const data = res as { success: boolean; url: string; message?: string };
+      if (data.success) {
+        setVideo(data.url);
+      } else {
+        setVideoError(data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      setVideoError("Upload failed. Please try again.");
+    } finally {
+      setUploadingVideo(false);
+      setVideoProgress(0);
+    }
+  };
+
   return (
-    <div className="relative flex justify-center items-center min-h-screen  p-4 overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="relative flex justify-center items-center min-h-screen p-4 overflow-hidden">
+      {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="absolute top-1/4 left-10 w-32 h-32 bg-purple-200 rounded-full filter blur-3xl opacity-20 animate-float"></div>
         <div className="absolute bottom-1/3 right-20 w-40 h-40 bg-indigo-200 rounded-full filter blur-3xl opacity-20 animate-float-delay"></div>
       </div>
 
-      {/* Floating 3D Character with Particles */}
+      {/* Floating character */}
       <div className="fixed bottom-8 right-8 z-10">
         <motion.div
           initial={{ y: 20, rotate: -5 }}
@@ -81,7 +148,6 @@ const EditForm = ({ data }: projectProps) => {
             <div className="w-40 h-40 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center shadow-lg border border-white/20">
               <Rocket className="w-16 h-16 text-indigo-600 animate-float" />
             </div>
-            {/* Particles */}
             {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
@@ -110,7 +176,7 @@ const EditForm = ({ data }: projectProps) => {
         </motion.div>
       </div>
 
-      {/* Main Form Card */}
+      {/* Main form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -118,7 +184,7 @@ const EditForm = ({ data }: projectProps) => {
         className="w-full max-w-2xl relative z-10"
       >
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/20 transform transition-all hover:shadow-3xl">
-          {/* Glassmorphism Header */}
+          {/* Header */}
           <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white overflow-hidden">
             <div className="absolute inset-0 bg-noise opacity-10"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-pink-500/10"></div>
@@ -129,7 +195,7 @@ const EditForm = ({ data }: projectProps) => {
                 transition={{ delay: 0.2 }}
                 className="text-3xl font-bold tracking-tight"
               >
-                Edit Project
+                Create New Project
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
@@ -140,21 +206,18 @@ const EditForm = ({ data }: projectProps) => {
                 Launch your next big idea
               </motion.p>
             </div>
-            {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-purple-500/5 rounded-full -mr-20 -mt-20"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/5 rounded-full -ml-16 -mb-16"></div>
           </div>
 
-          {/* Form Body */}
           <form
             id={form.id}
             onSubmit={form.onSubmit}
             action={action}
             className="p-8 space-y-8"
           >
-            <input type="hidden" value={data.id} name="projectId" />
             <div className="space-y-8">
-              {/* Basic Info Card */}
+              {/* Basic Info Section */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -199,12 +262,12 @@ const EditForm = ({ data }: projectProps) => {
                   </div>
 
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.description.id}
                       className="block text-sm font-medium text-gray-700/90 mb-2.5"
                     >
                       Short Description <span className="text-red-400">*</span>
-                    </label>
+                    </Label>
                     <Textarea
                       id={fields.description.id}
                       name={fields.description.name}
@@ -229,13 +292,13 @@ const EditForm = ({ data }: projectProps) => {
                   </div>
 
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.longDescription.id}
                       className="block text-sm font-medium text-gray-700/90 mb-2.5"
                     >
                       Detailed Description{" "}
                       <span className="text-red-400">*</span>
-                    </label>
+                    </Label>
                     <Textarea
                       id={fields.longDescription.id}
                       name={fields.longDescription.name}
@@ -261,7 +324,7 @@ const EditForm = ({ data }: projectProps) => {
                 </div>
               </motion.div>
 
-              {/* Links Card */}
+              {/* Links Section */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -277,12 +340,12 @@ const EditForm = ({ data }: projectProps) => {
 
                 <div className="space-y-6">
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.githubUrl.id}
                       className="block text-sm font-medium text-gray-700/90 mb-2.5"
                     >
                       GitHub URL
-                    </label>
+                    </Label>
                     <Input
                       id={fields.githubUrl.id}
                       name={fields.githubUrl.name}
@@ -306,12 +369,12 @@ const EditForm = ({ data }: projectProps) => {
                   </div>
 
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.liveUrl.id}
                       className="block text-sm font-medium text-gray-700/90 mb-2.5"
                     >
                       Live Demo URL
-                    </label>
+                    </Label>
                     <Input
                       id={fields.liveUrl.id}
                       name={fields.liveUrl.name}
@@ -336,7 +399,7 @@ const EditForm = ({ data }: projectProps) => {
                 </div>
               </motion.div>
 
-              {/* Metadata Card */}
+              {/* Metadata Section */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -352,18 +415,16 @@ const EditForm = ({ data }: projectProps) => {
 
                 <div className="space-y-6">
                   <div>
-                    <label
+                    <Label
                       htmlFor="domain"
                       className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
                     >
                       Domain <span className="text-red-400">*</span>
-                    </label>
+                    </Label>
                     <div className="relative">
                       <select
-                        id={fields.domain.id}
-                        name={fields.domain.name}
-                        key={fields.domain.key}
-                        defaultValue={data.domain}
+                        id="domain"
+                        name="domain"
                         className="block w-full rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-400 focus:border-pink-300 shadow-sm transition-all hover:border-pink-300 appearance-none"
                       >
                         <option value="">Select a domain</option>
@@ -400,14 +461,15 @@ const EditForm = ({ data }: projectProps) => {
                       )}
                     </AnimatePresence>
                   </div>
+
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.tags.id}
                       className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
                     >
                       Tags <span className="text-red-400">*</span> (comma
                       separated)
-                    </label>
+                    </Label>
                     <Input
                       id={fields.tags.id}
                       name={fields.tags.name}
@@ -431,20 +493,19 @@ const EditForm = ({ data }: projectProps) => {
                     </AnimatePresence>
                   </div>
 
-                  {/* Technologies Input */}
                   <div>
-                    <label
+                    <Label
                       htmlFor={fields.technologies.id}
                       className="block text-sm font-medium text-gray-700/90 dark:text-gray-300 mb-2.5"
                     >
                       Technologies <span className="text-red-400">*</span>{" "}
                       (comma separated)
-                    </label>
+                    </Label>
                     <Input
                       id={fields.technologies.id}
                       name={fields.technologies.name}
                       key={fields.technologies.key}
-                      defaultValue={data.technologies as string[]}
+                      defaultValue={data.technologies}
                       placeholder="React, TypeScript, Next.js, Tailwind CSS"
                       className="focus:ring-2 focus:ring-pink-400 border-gray-200 dark:border-gray-600 hover:border-pink-300 transition-all shadow-sm dark:bg-gray-700 dark:text-white"
                     />
@@ -462,17 +523,33 @@ const EditForm = ({ data }: projectProps) => {
                       )}
                     </AnimatePresence>
                   </div>
+                </div>
+              </motion.div>
 
-                  <div className="flex flex-col gap-3">
-                    <Label>Images</Label>
+              {/* Media Section */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-white/80 backdrop-blur-sm p-7 rounded-2xl border border-white/20 shadow-sm hover:shadow-md transition-all"
+              >
+                <h3 className="font-semibold text-xl mb-6 text-gray-800 flex items-center">
+                  <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full mr-3 shadow-sm"></span>
+                  <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    Project Media
+                  </span>
+                </h3>
+
+                <div className="space-y-8">
+                  {/* Images Upload */}
+                  <div className="gap-5 flex flex-col">
+                    <Label>Project Images</Label>
                     <input
                       type="hidden"
                       value={images}
                       key={fields.images.key}
                       name={fields.images.name}
-                      defaultValue={data.images}
                     />
-
                     <AnimatePresence mode="wait">
                       {images.length > 0 ? (
                         <motion.div
@@ -502,7 +579,7 @@ const EditForm = ({ data }: projectProps) => {
                               />
 
                               <motion.button
-                                onClick={() => handleDelete(index)}
+                                onClick={() => handleDeleteImage(index)}
                                 type="button"
                                 className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
                                 whileHover={{ scale: 1.1 }}
@@ -520,9 +597,10 @@ const EditForm = ({ data }: projectProps) => {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.2 }}
+                          className="mt-4"
                         >
                           <UploadButton
-                            className="mt-4 ut-button:bg-gradient-to-r ut-button:from-indigo-600 ut-button:to-purple-600 ut-button:ut-readying:bg-gradient-to-r ut-button:ut-readying:from-indigo-500 ut-button:ut-readying:to-purple-500 ut-button:ut-uploading:bg-gradient-to-r ut-button:ut-uploading:from-indigo-500 ut-button:ut-uploading:to-purple-500 ut-button:hover:bg-gradient-to-r ut-button:hover:from-indigo-700 ut-button:hover:to-purple-700 ut-button:transition-all ut-button:duration-200 ut-button:rounded-lg ut-button:px-5 ut-button:py-2.5 ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-md ut-allowed-content:hidden ut-button:hover:shadow-lg ut-button:focus:ring-2 ut-button:focus:ring-indigo-400 ut-button:focus:ring-offset-2 ut-button:border-0"
+                            className="ut-button:bg-gradient-to-r ut-button:from-indigo-600 ut-button:to-purple-600 ut-button:ut-readying:bg-gradient-to-r ut-button:ut-readying:from-indigo-500 ut-button:ut-readying:to-purple-500 ut-button:ut-uploading:bg-gradient-to-r ut-button:ut-uploading:from-indigo-500 ut-button:ut-uploading:to-purple-500 ut-button:hover:bg-gradient-to-r ut-button:hover:from-indigo-700 ut-button:hover:to-purple-700 ut-button:transition-all ut-button:duration-200 ut-button:rounded-lg ut-button:px-5 ut-button:py-2.5 ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-md ut-allowed-content:hidden ut-button:hover:shadow-lg ut-button:focus:ring-2 ut-button:focus:ring-indigo-400 ut-button:focus:ring-offset-2 ut-button:border-0"
                             endpoint="imageUploader"
                             onClientUploadComplete={(res) => {
                               setImages(res.map((r) => r.ufsUrl));
@@ -536,17 +614,122 @@ const EditForm = ({ data }: projectProps) => {
                       )}
                     </AnimatePresence>
 
+                    {fields.images.errors && (
+                      <motion.p
+                        className="text-red-500 text-sm mt-1"
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {fields.images.errors}
+                      </motion.p>
+                    )}
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200 dark:border-gray-600"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-2 bg-white/80 dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400">
+                        AND
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Video Upload */}
+                  <div className="flex flex-col gap-3">
+                    <Label>Project Video</Label>
+
+                    <input
+                      type="hidden"
+                      value={video || ""}
+                      key={fields.video.key}
+                      name={fields.video.name}
+                    />
+
+                    <div className="relative">
+                      <label
+                        htmlFor="video-upload"
+                        className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                          video
+                            ? "border-green-500 bg-green-50 hover:bg-green-100"
+                            : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                        }`}
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-500">
+                            {video ? "Video uploaded" : "Click to upload"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {video
+                              ? "Replace video"
+                              : "MP4, MOV, AVI (MAX. 100MB)"}
+                          </p>
+                        </div>
+                        <input
+                          id="video-upload"
+                          type="file"
+                          accept="video/*"
+                          onChange={handleVideoUpload}
+                          className="hidden"
+                          disabled={uploadingVideo}
+                        />
+                      </label>
+
+                      {uploadingVideo && (
+                        <div className="mt-2">
+                          <Progress value={videoProgress} className="h-2" />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Uploading... {videoProgress}%
+                          </p>
+                        </div>
+                      )}
+
+                      {fields.video.errors && (
+                        <p className="text-sm text-red-500 mt-2">
+                          {fields.video.errors}
+                        </p>
+                      )}
+                      {videoError && (
+                        <p className="text-sm text-red-500 mt-2">
+                          {videoError}
+                        </p>
+                      )}
+                    </div>
+
                     <AnimatePresence>
-                      {fields.images.errors && (
-                        <motion.p
-                          className="text-red-500 text-sm mt-1"
-                          initial={{ opacity: 0, y: -5 }}
+                      {video && (
+                        <motion.div
+                          key="video-preview"
+                          className="relative w-full max-w-[400px]"
+                          initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          transition={{ duration: 0.15 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          {fields.images.errors}
-                        </motion.p>
+                          <Card className="w-full overflow-hidden">
+                            <CardContent className="p-0">
+                              <video
+                                src={video}
+                                controls
+                                className="w-full h-auto max-h-[300px] object-contain"
+                              />
+                            </CardContent>
+                          </Card>
+                          <motion.button
+                            onClick={handleDeleteVideo}
+                            type="button"
+                            className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <XIcon className="w-3 h-3" />
+                          </motion.button>
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
@@ -591,7 +774,7 @@ const EditForm = ({ data }: projectProps) => {
         </div>
       </motion.div>
 
-      {/* Global styles for animations */}
+      {/* Global styles */}
       <style jsx global>{`
         @keyframes float {
           0%,

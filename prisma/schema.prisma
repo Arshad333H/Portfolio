@@ -17,6 +17,7 @@ model Project {
   images           String[] // Array of image paths
   githubUrl        String?
   liveUrl          String?
+  video           String?
   features         String[] // Array of features
   tags             String[] // Array of tags
   domain           ProjectDomain @default(WEB)
