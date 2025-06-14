@@ -1,52 +1,67 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-
-export const dynamic = 'force-dynamic';
+// app/api/upload/route.ts
+import { NextResponse } from 'next/server';
+import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 const s3 = new S3Client({
-  region: process.env.TIGRIS_S3_REGION!,
-  endpoint: process.env.TIGRIS_S3_ENDPOINT!,
+  region: process.env.TIGRIS_S3_REGION || 'auto',
+  endpoint: process.env.TIGRIS_S3_ENDPOINT || 'https://t3.storage.dev',
   credentials: {
-    accessKeyId: process.env.TIGRIS_S3_ACCESS_KEY!,
-    secretAccessKey: process.env.TIGRIS_S3_SECRET_KEY!,
+    accessKeyId: process.env.TIGRIS_S3_ACCESS_KEY || '',
+    secretAccessKey: process.env.TIGRIS_S3_SECRET_KEY || '',
   },
   forcePathStyle: true,
 });
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const form = await req.formData();
-    const videoFile = form.get('file') as File;
+    const formData = await request.formData();
+    const file = formData.get('file') as File | null;
 
-    if (!videoFile) {
-      return NextResponse.json({ error: 'Video file is missing' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file uploaded' },
+        { status: 400 }
+      );
     }
 
-    // Check file size (100MB max)
-    if (videoFile.size > 100 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size exceeds 100MB limit' }, { status: 400 });
-    }
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const fileName = `uploads/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
 
-    const buffer = Buffer.from(await videoFile.arrayBuffer());
-    const uniqueName = `video-${Date.now()}-${videoFile.name.replace(/\s+/g, '-')}`;
-
-    const uploadCommand = new PutObjectCommand({
-      Bucket: process.env.TIGRIS_S3_BUCKET!,
-      Key: uniqueName,
+    // Explicitly type the upload parameters
+    const uploadParams: PutObjectCommandInput = {
+      Bucket: process.env.TIGRIS_S3_BUCKET,
+      Key: fileName,
       Body: buffer,
-      ContentType: videoFile.type,
+      ContentType: file.type,
       ACL: 'public-read',
+      // Add metadata if needed
+      Metadata: {
+        'original-filename': file.name,
+        'content-type': file.type,
+      }
+    };
+
+    // Now TypeScript knows the exact shape of uploadParams
+    await s3.send(new PutObjectCommand(uploadParams));
+
+    const fileUrl = `${process.env.TIGRIS_S3_ENDPOINT}/${process.env.TIGRIS_S3_BUCKET}/${fileName}`;
+    
+    return NextResponse.json({
+      success: true,
+      url: fileUrl,
     });
 
-    await s3.send(uploadCommand);
-
-    const fileUrl = `${process.env.TIGRIS_S3_ENDPOINT}/${process.env.TIGRIS_S3_BUCKET}/${uniqueName}`;
-    return NextResponse.json({ success: true, url: fileUrl });
-  } catch (error) {
-    console.error('Video upload error:', error);
+  } catch (error: any) {
+    console.error('Upload error:', error);
     return NextResponse.json(
-      { success: false, message: 'Upload failed', error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: error.message || 'Upload failed' },
       { status: 500 }
     );
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
