@@ -45,76 +45,75 @@ const UploadProject = () => {
   };
 
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  setVideoError(null);
-  setUploadingVideo(true);
-  setVideoProgress(0);
+    setVideoError(null);
+    setUploadingVideo(true);
+    setVideoProgress(0);
 
-  const ALLOWED_TYPES = ["video/mp4", "video/quicktime", "video/x-msvideo"];
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    setVideoError("Only MP4, MOV, AVI videos allowed");
-    setUploadingVideo(false);
-    return;
-  }
+    const ALLOWED_TYPES = ["video/mp4", "video/quicktime", "video/x-msvideo"];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setVideoError("Only MP4, MOV, AVI videos allowed");
+      setUploadingVideo(false);
+      return;
+    }
 
-  if (file.size > 200 * 1024 * 1024) {
-    setVideoError("File size exceeds 200MB limit");
-    setUploadingVideo(false);
-    return;
-  }
+    if (file.size > 200 * 1024 * 1024) {
+      setVideoError("File size exceeds 200MB limit");
+      setUploadingVideo(false);
+      return;
+    }
 
-  try {
-    // 1️⃣ Get the signed URL from the server
-    const res = await fetch("/api/upload-url", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type,
-      }),
-    });
+    try {
+      // 1️⃣ Get the signed URL from the server
+      const res = await fetch("/api/upload-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+        }),
+      });
 
-    const { url, key } = await res.json();
+      const { url, key } = await res.json();
 
-    // 2️⃣ Upload the file directly to S3 using that signed URL
-    const xhr = new XMLHttpRequest();
+      // 2️⃣ Upload the file directly to S3 using that signed URL
+      const xhr = new XMLHttpRequest();
 
-    xhr.upload.addEventListener("progress", (event) => {
-      if (event.lengthComputable) {
-        setVideoProgress(Math.round((event.loaded / event.total) * 100));
-      }
-    });
-
-    await new Promise<void>((resolve, reject) => {
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            resolve();
-          } else {
-            reject(new Error(`Upload failed: ${xhr.statusText}`));
-          }
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          setVideoProgress(Math.round((event.loaded / event.total) * 100));
         }
-      };
-      xhr.open("PUT", url, true);
-      xhr.setRequestHeader("Content-Type", file.type);
-      xhr.send(file);
-    });
+      });
 
-    // 3️⃣ Set the video URL after successful upload
-    const publicUrl = `${process.env.NEXT_PUBLIC_TIGRIS_PUBLIC_URL}/${process.env.TIGRIS_S3_BUCKET}/${key}`;
-    setVideo(publicUrl);
-  } catch (err) {
-    console.error("Upload error:", err);
-    setVideoError(err instanceof Error ? err.message : "Upload failed");
-  } finally {
-    setUploadingVideo(false);
-  }
-};
+      await new Promise<void>((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              resolve();
+            } else {
+              reject(new Error(`Upload failed: ${xhr.statusText}`));
+            }
+          }
+        };
+        xhr.open("PUT", url, true);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
 
+      // 3️⃣ Set the video URL after successful upload
+      const publicUrl = `https://${process.env.TIGRIS_S3_BUCKET}.fly.storage.tigris.dev/${key}`;
+      setVideo(publicUrl);
+    } catch (err) {
+      console.error("Upload error:", err);
+      setVideoError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
 
   return (
     <div className="relative flex justify-center items-center min-h-screen p-4 overflow-hidden">
