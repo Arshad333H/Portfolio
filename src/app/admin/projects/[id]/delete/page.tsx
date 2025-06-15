@@ -27,7 +27,7 @@ export default function DeleteRoute({ params }: { params: { id: string } }) {
             <Link href="/admin/projects">Cancel</Link>
           </Button>
           <form action={deleteProjectAction}>
-            <input type="hidden" name="projecttId" value={id} />
+            <input type="hidden" name="projectId" value={id} />
             <Button variant="destructive" type="submit">
               Delete Project
             </Button>
