@@ -28,3 +28,4 @@ export const ProjectSchema = z.object({
   domain: z.enum(["WEB", "ML", "AI_ML", "DS"]).default("WEB"),
   video: z.string().url().nullable().optional(),
 });
+
