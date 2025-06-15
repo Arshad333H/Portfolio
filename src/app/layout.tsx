@@ -39,7 +39,6 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
           <Suspense>
-            {" "}
             <UTSSR />
           </Suspense>
           <div className="w-full max-w-6xl mx-auto">

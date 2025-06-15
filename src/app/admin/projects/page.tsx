@@ -53,9 +53,9 @@ export default async function ProductsRoute() {
       </div>
       <Card className="mt-5">
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>Project Details</CardTitle>
           <CardDescription>
-            Manage your products and view their sales performance
+            Manage Projects
           </CardDescription>
         </CardHeader>
         <CardContent>

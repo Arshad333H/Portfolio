@@ -47,37 +47,43 @@ export default async function ProjectDetails({
       />
 
       {(project.liveUrl || project.githubUrl) && (
-        <div className="flex flex-wrap gap-4">
-          {project.liveUrl && (
-            <Button asChild>
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaExternalLinkAlt className="mr-2" />
-                Live Preview
-              </a>
-            </Button>
-          )}
-          {project.githubUrl && (
-            <Button asChild variant="secondary">
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaGithub className="mr-2" />
-                GitHub Repo
-              </a>
-            </Button>
-          )}
+        <div className="flex flex-col">
+          <h1 className="font-bold text-3xl mb-2">URLs:</h1>
+          <div className="flex flex-wrap gap-4">
+            {project.liveUrl && (
+              <Button asChild>
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaExternalLinkAlt className="mr-2" />
+                  Live Preview
+                </a>
+              </Button>
+            )}
+            {project.githubUrl && (
+              <Button asChild variant="secondary">
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub className="mr-2" />
+                  GitHub Repo
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
       )}
 
       {project.longDescription && (
         <Card className="shadow-md">
-          <CardContent className="p-6 space-y-4 text-base leading-relaxed text-muted-foreground">
+          <CardContent className="p-6 space-y-4 text-base leading-relaxed text-black font-semibold whitespace-pre-line ">
+            <h1 className="text-3xl font-bold tracking-tight text-black mb-4">
+              Project Description
+            </h1>
             {project.longDescription}
           </CardContent>
         </Card>
