@@ -7,21 +7,15 @@ import { ProjectSchema } from "@/lib/ZodSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { XIcon, Rocket, Sparkles, Upload } from "lucide-react";
+import { XIcon, Rocket, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { createProjectAction } from "@/../action";
 import { FiAlertCircle } from "react-icons/fi";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 const UploadProject = () => {
-  const [video, setVideo] = useState<string | null>(null);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [videoProgress, setVideoProgress] = useState(0);
-  const [videoError, setVideoError] = useState<string | null>(null);
   const [lastResult, action] = useActionState(createProjectAction, undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -38,84 +32,7 @@ const UploadProject = () => {
   const handleDeleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
-
-  const handleDeleteVideo = () => {
-    setVideo(null);
-    setVideoError(null);
-  };
-
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setVideoError(null);
-    setUploadingVideo(true);
-    setVideoProgress(0);
-
-    const ALLOWED_TYPES = ["video/mp4", "video/quicktime", "video/x-msvideo"];
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      setVideoError("Only MP4, MOV, AVI videos allowed");
-      setUploadingVideo(false);
-      return;
-    }
-
-    if (file.size > 200 * 1024 * 1024) {
-      setVideoError("File size exceeds 200MB limit");
-      setUploadingVideo(false);
-      return;
-    }
-
-    try {
-      // 1️⃣ Get the signed URL from the server
-      const res = await fetch("/api/upload-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fileName: file.name,
-          fileType: file.type,
-        }),
-      });
-
-      const { url, key } = await res.json();
-
-      // 2️⃣ Upload the file directly to S3 using that signed URL
-      const xhr = new XMLHttpRequest();
-
-      xhr.upload.addEventListener("progress", (event) => {
-        if (event.lengthComputable) {
-          setVideoProgress(Math.round((event.loaded / event.total) * 100));
-        }
-      });
-
-      await new Promise<void>((resolve, reject) => {
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              resolve();
-            } else {
-              reject(new Error(`Upload failed: ${xhr.statusText}`));
-            }
-          }
-        };
-        xhr.open("PUT", url, true);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
-      });
-
-      // 3️⃣ Set the video URL after successful upload
-      const publicUrl = `${process.env.NEXT_PUBLIC_BASE_VIDEO_URL}${key}`;
-
-      // https://portfolio-media-gallery.fly.storage.tigris.dev/uploads/1749924373609-1.mp4
-      setVideo(publicUrl);
-    } catch (err) {
-      console.error("Upload error:", err);
-      setVideoError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploadingVideo(false);
-    }
-  };
+  const [video, setVideo] = useState(fields.video.initialValue || "");
 
   return (
     <div className="relative flex justify-center items-center min-h-screen p-4 overflow-hidden">
@@ -531,7 +448,7 @@ const UploadProject = () => {
                 </div>
               </motion.div>
 
-              {/* Media Section */}
+              {/* Media Section - Images Only */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -541,207 +458,169 @@ const UploadProject = () => {
                 <h3 className="font-semibold text-xl mb-6 text-gray-800 flex items-center">
                   <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full mr-3 shadow-sm"></span>
                   <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Project Media
+                    Project Images
                   </span>
                 </h3>
 
-                <div className="space-y-8">
-                  {/* Images Upload */}
-                  <div>
-                    <Label>Project Images</Label>
-                    <input
-                      type="hidden"
-                      value={images}
-                      key={fields.images.key}
-                      name={fields.images.name}
-                      defaultValue={fields.images.initialValue as any}
-                    />
+                <div>
+                  <Label>Project Images</Label>
+                  <input
+                    type="hidden"
+                    value={images}
+                    key={fields.images.key}
+                    name={fields.images.name}
+                    defaultValue={fields.images.initialValue as any}
+                  />
 
-                    <AnimatePresence mode="wait">
-                      {images.length > 0 ? (
-                        <motion.div
-                          key="image-grid"
-                          className="flex gap-5 flex-wrap mt-4"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {images.map((image, index) => (
-                            <motion.div
-                              key={index}
-                              className="relative w-[100px] h-[100px]"
-                              initial={{ scale: 0.9, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0.8, opacity: 0 }}
-                              transition={{ duration: 0.15 }}
-                              layout
-                            >
-                              <Image
-                                height={100}
-                                width={100}
-                                src={image}
-                                alt="Project Image"
-                                className="w-full h-full object-cover rounded-lg border"
-                              />
-                              <motion.button
-                                onClick={() => handleDeleteImage(index)}
-                                type="button"
-                                className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <XIcon className="w-3 h-3" />
-                              </motion.button>
-                            </motion.div>
-                          ))}
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="upload-button"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="mt-4"
-                        >
-                          <UploadButton
-                            className="ut-button:bg-gradient-to-r ut-button:from-indigo-600 ut-button:to-purple-600 ut-button:ut-readying:bg-gradient-to-r ut-button:ut-readying:from-indigo-500 ut-button:ut-readying:to-purple-500 ut-button:ut-uploading:bg-gradient-to-r ut-button:ut-uploading:from-indigo-500 ut-button:ut-uploading:to-purple-500 ut-button:hover:bg-gradient-to-r ut-button:hover:from-indigo-700 ut-button:hover:to-purple-700 ut-button:transition-all ut-button:duration-200 ut-button:rounded-lg ut-button:px-5 ut-button:py-2.5 ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-md ut-allowed-content:hidden ut-button:hover:shadow-lg ut-button:focus:ring-2 ut-button:focus:ring-indigo-400 ut-button:focus:ring-offset-2 ut-button:border-0"
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                              setImages(res.map((r) => r.ufsUrl));
-                            }}
-                            onUploadError={(error) => {
-                              console.error("Upload error:", error);
-                              alert(`Upload failed: ${error.message}`);
-                            }}
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {fields.images.errors && (
-                      <motion.p
-                        className="text-red-500 text-sm mt-1"
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.15 }}
+                  <AnimatePresence mode="wait">
+                    {images.length > 0 ? (
+                      <motion.div
+                        key="image-grid"
+                        className="flex gap-5 flex-wrap mt-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        {fields.images.errors}
-                      </motion.p>
-                    )}
-                  </div>
-
-                  {/* Divider */}
-                  <div className="relative py-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200 dark:border-gray-600"></div>
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className="px-2 bg-white/80 dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400">
-                        AND
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Video Upload */}
-                  <div className="flex flex-col gap-3">
-                    <Label>Project Video</Label>
-
-                    <input
-                      type="hidden"
-                      value={video || ""}
-                      key={fields.video.key}
-                      name={fields.video.name}
-                      defaultValue={
-                        fields.video.initialValue as string | undefined
-                      }
-                    />
-
-                    <div className="relative">
-                      <label
-                        htmlFor="video-upload"
-                        className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                          video
-                            ? "border-green-500 bg-green-50 hover:bg-green-100"
-                            : "border-gray-300 bg-gray-50 hover:bg-gray-100"
-                        }`}
-                      >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                          <p className="mb-2 text-sm text-gray-500">
-                            {video ? "Video uploaded" : "Click to upload"}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {video
-                              ? "Replace video"
-                              : "MP4, MOV, AVI (MAX. 100MB)"}
-                          </p>
-                        </div>
-                        <input
-                          id="video-upload"
-                          type="file"
-                          accept="video/mp4,video/quicktime,video/x-msvideo"
-                          onChange={handleVideoUpload}
-                          className="hidden"
-                          disabled={uploadingVideo}
-                        />
-                      </label>
-
-                      {uploadingVideo && (
-                        <div className="mt-2">
-                          <Progress value={videoProgress} className="h-2" />
-                          <p className="text-xs text-gray-500 mt-1">
-                            Uploading... {videoProgress}%
-                          </p>
-                        </div>
-                      )}
-
-                      {fields.video.errors && (
-                        <p className="text-sm text-red-500 mt-2">
-                          {fields.video.errors}
-                        </p>
-                      )}
-                      {videoError && (
-                        <p className="text-sm text-red-500 mt-2">
-                          {videoError}
-                        </p>
-                      )}
-                    </div>
-
-                    <AnimatePresence>
-                      {video && (
-                        <motion.div
-                          key="video-preview"
-                          className="relative w-full max-w-[400px]"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Card className="w-full overflow-hidden">
-                            <CardContent className="p-0">
-                              <video
-                                src={video}
-                                controls
-                                className="w-full h-auto max-h-[300px] object-contain"
-                              />
-                            </CardContent>
-                          </Card>
-                          <motion.button
-                            onClick={handleDeleteVideo}
-                            type="button"
-                            className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                        {images.map((image, index) => (
+                          <motion.div
+                            key={index}
+                            className="relative w-[100px] h-[100px]"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            layout
                           >
-                            <XIcon className="w-3 h-3" />
-                          </motion.button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                            <Image
+                              height={100}
+                              width={100}
+                              src={image}
+                              alt="Project Image"
+                              className="w-full h-full object-cover rounded-lg border"
+                            />
+                            <motion.button
+                              onClick={() => handleDeleteImage(index)}
+                              type="button"
+                              className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <XIcon className="w-3 h-3" />
+                            </motion.button>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="upload-button"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="mt-4"
+                      >
+                        <UploadButton
+                          className="ut-button:bg-gradient-to-r ut-button:from-indigo-600 ut-button:to-purple-600 ut-button:ut-readying:bg-gradient-to-r ut-button:ut-readying:from-indigo-500 ut-button:ut-readying:to-purple-500 ut-button:ut-uploading:bg-gradient-to-r ut-button:ut-uploading:from-indigo-500 ut-button:ut-uploading:to-purple-500 ut-button:hover:bg-gradient-to-r ut-button:hover:from-indigo-700 ut-button:hover:to-purple-700 ut-button:transition-all ut-button:duration-200 ut-button:rounded-lg ut-button:px-5 ut-button:py-2.5 ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-md ut-allowed-content:hidden ut-button:hover:shadow-lg ut-button:focus:ring-2 ut-button:focus:ring-indigo-400 ut-button:focus:ring-offset-2 ut-button:border-0"
+                          endpoint="imageUploader"
+                          onClientUploadComplete={(res) => {
+                            setImages(res.map((r) => r.ufsUrl));
+                          }}
+                          onUploadError={(error) => {
+                            console.error("Upload error:", error);
+                            alert(`Upload failed: ${error.message}`);
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {fields.images.errors && (
+                    <motion.p
+                      className="text-red-500 text-sm mt-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {fields.images.errors}
+                    </motion.p>
+                  )}
+                </div>
+                <div>
+                  <Label>Project Video</Label>
+
+                  {/* Hidden input for form submission */}
+                  <input
+                    type="hidden"
+                    value={video}
+                    key={fields.video.key}
+                    name={fields.video.name}
+                    defaultValue={fields.video.initialValue as any}
+                  />
+
+                  <AnimatePresence mode="wait">
+                    {video ? (
+                      <motion.div
+                        key="video-preview"
+                        className="relative mt-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <video
+                          src={video}
+                          controls
+                          className="w-[320px] h-[180px] rounded-lg border"
+                        />
+                        <motion.button
+                          onClick={() => setVideo("")}
+                          type="button"
+                          className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white shadow-sm"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <XIcon className="w-3 h-3" />
+                        </motion.button>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="upload-button"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="mt-4"
+                      >
+                        <UploadButton
+                          endpoint="videoUploader"
+                          className="ut-button:bg-gradient-to-r ut-button:from-green-600 ut-button:to-blue-600 ut-button:hover:from-green-700 ut-button:hover:to-blue-700 ut-button:rounded-lg ut-button:px-5 ut-button:py-2.5 ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-md ut-button:hover:shadow-lg ut-button:focus:ring-2 ut-button:focus:ring-green-400 ut-button:focus:ring-offset-2 ut-button:border-0"
+                          onClientUploadComplete={(res) => {
+                            if (res?.[0]?.ufsUrl) {
+                              setVideo(res[0].ufsUrl);
+                            }
+                          }}
+                          onUploadError={(error) => {
+                            console.error("Upload error:", error);
+                            alert(`Upload failed: ${error.message}`);
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {fields.video.errors && (
+                    <motion.p
+                      className="text-red-500 text-sm mt-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {fields.video.errors}
+                    </motion.p>
+                  )}
                 </div>
               </motion.div>
             </div>

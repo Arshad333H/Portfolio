@@ -1,4 +1,4 @@
-"use client";
+// src/app/projects/[id]/page.tsx
 
 import { ProjectMediaGallery } from "@/app/components/ProjectMediaGallery";
 import { Badge } from "@/components/ui/badge";
@@ -6,23 +6,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import React from "react";
 import { FaExternalLinkAlt, FaGithub } from "react-icons/fa";
 
-async function getData(projectId: string) {
+async function getData(id: string) {
   const data = await prisma.project.findUnique({
-    where: { id: projectId },
+    where: { id },
   });
-  if (!data) return notFound();
+  if (!data) notFound();
   return data;
 }
 
-const ProjectDetails = async ({ params }: { params: { id: string } }) => {
-  const project = await getData(params.id);
+export default async function ProjectDetails({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
+  const project = await getData(id);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
-      {/* Cover Image */}
       {project.images?.[0] && (
         <div className="overflow-hidden rounded-2xl shadow-lg">
           <img
@@ -33,28 +35,26 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </div>
       )}
 
-      {/* Title & Description */}
       <div className="space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">{project.title}</h1>
         <p className="text-muted-foreground text-lg">{project.description}</p>
       </div>
 
-      {/* Media Gallery (images + video) */}
       <ProjectMediaGallery
         images={project.images || []}
-        videoUrl={project.video as string || ""}
+        videoUrl={(project.video as string) || ""}
         title={project.title}
       />
 
-      
-
-
-      {/* Links */}
       {(project.liveUrl || project.githubUrl) && (
         <div className="flex flex-wrap gap-4">
           {project.liveUrl && (
             <Button asChild>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaExternalLinkAlt className="mr-2" />
                 Live Preview
               </a>
@@ -62,7 +62,11 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
           )}
           {project.githubUrl && (
             <Button asChild variant="secondary">
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaGithub className="mr-2" />
                 GitHub Repo
               </a>
@@ -71,7 +75,6 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </div>
       )}
 
-      {/* Long Description */}
       {project.longDescription && (
         <Card className="shadow-md">
           <CardContent className="p-6 space-y-4 text-base leading-relaxed text-muted-foreground">
@@ -80,10 +83,9 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </Card>
       )}
 
-      {/* Features */}
       {project.features?.length > 0 && (
         <section>
-          <h2 className="text-2xl font-semibold mb-3">Key Features</h2>
+          <h2 className="text-2xl font-semibold mb-3 mt-3">Key Features</h2>
           <ul className="list-disc list-inside space-y-2 text-base">
             {project.features.map((feature, idx) => (
               <li key={idx}>{feature}</li>
@@ -92,7 +94,6 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </section>
       )}
 
-      {/* Tags */}
       {project.tags?.length > 0 && (
         <section>
           <h2 className="text-xl font-medium mb-2">Tags</h2>
@@ -106,7 +107,6 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </section>
       )}
 
-      {/* Technologies */}
       {project.technologies?.length > 0 && (
         <section>
           <h2 className="text-xl font-medium mb-2">Technologies</h2>
@@ -120,13 +120,10 @@ const ProjectDetails = async ({ params }: { params: { id: string } }) => {
         </section>
       )}
 
-      {/* Dates */}
       <p className="text-sm text-muted-foreground mt-8">
         Created: {new Date(project.createdAt).toLocaleDateString()} | Updated:{" "}
         {new Date(project.updatedAt).toLocaleDateString()}
       </p>
     </div>
   );
-};
-
-export default ProjectDetails;
+}
