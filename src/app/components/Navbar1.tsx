@@ -21,10 +21,10 @@ export default function FloatingNavbar() {
   const { user, isAuthenticated } = useKindeAuth()
 
   const navItems = [
-    { name: "Projects", href: "#projects", icon: Code },
-    { name: "Education", href: "#education", icon: GraduationCap },
-    { name: "Skills", href: "#skills", icon: Wrench },
-    { name: "Contact", href: "#contact", icon: Mail },
+    { name: "Projects", href: "/projects", icon: Code },
+    { name: "Education", href: "/education", icon: GraduationCap },
+    { name: "Skills", href: "/skills", icon: Wrench },
+    { name: "Contact", href: "/contact", icon: Mail },
   ]
 
   // Get user initials for avatar
