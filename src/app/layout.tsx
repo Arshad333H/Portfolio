@@ -67,7 +67,7 @@ export default function RootLayout({
           <Navbar1 />
 
           {/* Main content */}
-          <main className="relative z-10 pt-24 px-40">{children}</main>
+          <main className="relative z-10 pt-24 mt-2 md:px-40">{children}</main>
         </body>
       </html>
     </AuthProvider>

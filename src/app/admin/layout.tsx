@@ -10,6 +10,7 @@ const layout = async ({
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   
+
   return <div className="w-full max-w-6xl md:mx-auto">{children}</div>;
 };
 
