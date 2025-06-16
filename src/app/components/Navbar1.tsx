@@ -1,39 +1,52 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Menu, Code, GraduationCap, Mail, Wrench, LogIn, LogOut, UserPlus } from "lucide-react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useState } from "react";
+import {
+  Menu,
+  Code,
+  GraduationCap,
+  Mail,
+  Wrench,
+  LogIn,
+  LogOut,
+  UserPlus,
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs"
-import { LoginLink, RegisterLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components"
+} from "@/components/ui/dropdown-menu";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
+import {
+  LoginLink,
+  RegisterLink,
+  LogoutLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
 
 export default function FloatingNavbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user, isAuthenticated } = useKindeAuth()
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated } = useKindeAuth();
 
   const navItems = [
     { name: "Projects", href: "/projects", icon: Code },
     { name: "Education", href: "/education", icon: GraduationCap },
     { name: "Skills", href: "/skills", icon: Wrench },
     { name: "Contact", href: "/contact", icon: Mail },
-  ]
+  ];
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!user) return "U"
-    const firstName = user.given_name || ""
-    const lastName = user.family_name || ""
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
+    if (!user) return "U";
+    const firstName = user.given_name || "";
+    const lastName = user.family_name || "";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
 
   return (
     <>
@@ -43,9 +56,7 @@ export default function FloatingNavbar() {
           <div className="flex items-center space-x-8">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-                <img className="opacity-100" src={"/logo.png"}/>
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                </div>
+              <img className=" invert" src="/logo.png" alt="Logo" />
             </Link>
 
             {/* Navigation Items */}
@@ -65,9 +76,17 @@ export default function FloatingNavbar() {
             {/* Avatar with Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full p-0"
+                >
                   <Avatar className="w-8 h-8 ring-2 ring-white shadow-sm cursor-pointer">
-                    <AvatarImage src={user?.picture || "/placeholder.svg?height=32&width=32"} alt="Profile" />
+                    <AvatarImage
+                      src={
+                        user?.picture || "/placeholder.svg?height=32&width=32"
+                      }
+                      alt="Profile"
+                    />
                     <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs">
                       {getUserInitials()}
                     </AvatarFallback>
@@ -82,7 +101,9 @@ export default function FloatingNavbar() {
                         <p className="font-medium">
                           {user?.given_name} {user?.family_name}
                         </p>
-                        <p className="w-[200px] truncate text-sm text-muted-foreground">{user?.email}</p>
+                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
@@ -131,9 +152,17 @@ export default function FloatingNavbar() {
               {/* Avatar with Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full p-0"
+                  >
                     <Avatar className="w-8 h-8 ring-2 ring-white shadow-sm cursor-pointer">
-                      <AvatarImage src={user?.picture || "/placeholder.svg?height=32&width=32"} alt="Profile" />
+                      <AvatarImage
+                        src={
+                          user?.picture || "/placeholder.svg?height=32&width=32"
+                        }
+                        alt="Profile"
+                      />
                       <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs">
                         {getUserInitials()}
                       </AvatarFallback>
@@ -148,7 +177,9 @@ export default function FloatingNavbar() {
                           <p className="font-medium">
                             {user?.given_name} {user?.family_name}
                           </p>
-                          <p className="w-[200px] truncate text-sm text-muted-foreground">{user?.email}</p>
+                          <p className="w-[200px] truncate text-sm text-muted-foreground">
+                            {user?.email}
+                          </p>
                         </div>
                       </div>
                       <DropdownMenuSeparator />
@@ -190,17 +221,27 @@ export default function FloatingNavbar() {
                   <div className="flex flex-col space-y-6 mt-6">
                     <div className="flex items-center space-x-3 pb-4 border-b">
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={user?.picture || "/placeholder.svg?height=48&width=48"} alt="Profile" />
+                        <AvatarImage
+                          src={
+                            user?.picture ||
+                            "/placeholder.svg?height=48&width=48"
+                          }
+                          alt="Profile"
+                        />
                         <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                           {getUserInitials()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-semibold text-gray-900">
-                          {isAuthenticated ? `${user?.given_name} ${user?.family_name}` : "Guest User"}
+                          {isAuthenticated
+                            ? `${user?.given_name} ${user?.family_name}`
+                            : "Guest User"}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          {isAuthenticated ? "Full Stack Developer" : "Not logged in"}
+                          {isAuthenticated
+                            ? "Full Stack Developer"
+                            : "Not logged in"}
                         </p>
                       </div>
                     </div>
@@ -222,7 +263,10 @@ export default function FloatingNavbar() {
                     <div className="pt-4 border-t">
                       {isAuthenticated ? (
                         <LogoutLink>
-                          <Button variant="outline" className="w-full justify-start">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                          >
                             <LogOut className="mr-2 h-4 w-4" />
                             Log out
                           </Button>
@@ -236,7 +280,10 @@ export default function FloatingNavbar() {
                             </Button>
                           </LoginLink>
                           <RegisterLink>
-                            <Button variant="outline" className="w-full justify-start">
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start"
+                            >
                               <UserPlus className="mr-2 h-4 w-4" />
                               Register
                             </Button>
@@ -252,5 +299,5 @@ export default function FloatingNavbar() {
         </div>
       </nav>
     </>
-  )
+  );
 }
