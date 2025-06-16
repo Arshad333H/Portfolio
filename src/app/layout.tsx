@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import Navbar1 from "./components/Navbar1";
 import { AuthProvider } from "./AuthProvider";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -36,14 +36,15 @@ export default function RootLayout({
     <AuthProvider>
       <html lang="en" >
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br`}
         >
+          
           <Suspense>
             <UTSSR />
           </Suspense>
           <div className="w-full max-w-6xl mx-auto">
-            <Navbar />
-            <div className="w-full max-w-[1100px] mx-auto">{children}</div>
+            <Navbar1 />
+            <div className="w-full max-w-[1100px] mx-auto pt-24">{children}</div>
           </div>
         </body>
       </html>
