@@ -1,36 +1,48 @@
-"use client"
-import { Code, GraduationCap, Mail, Wrench, LogIn, LogOut, UserPlus } from "lucide-react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+"use client";
+import {
+  Code,
+  GraduationCap,
+  Mail,
+  Wrench,
+  LogIn,
+  LogOut,
+  UserPlus,
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs"
-import { LoginLink, RegisterLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components"
-import Image from "next/image"
+} from "@/components/ui/dropdown-menu";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
+import {
+  LoginLink,
+  RegisterLink,
+  LogoutLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
+import Image from "next/image";
 
 export default function FloatingNavbar() {
-  const { user, isAuthenticated } = useKindeAuth()
+  const { user, isAuthenticated } = useKindeAuth();
 
   const navItems = [
     { name: "Projects", href: "/projects", icon: Code },
     { name: "Education", href: "/education", icon: GraduationCap },
     { name: "Skills", href: "/skills", icon: Wrench },
     { name: "Contact", href: "/contact", icon: Mail },
-  ]
+  ];
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!user) return "AR"
-    const firstName = user.given_name || ""
-    const lastName = user.family_name || ""
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
+    if (!user) return "AR";
+    const firstName = user.given_name || "";
+    const lastName = user.family_name || "";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
 
   return (
     <>
@@ -40,7 +52,7 @@ export default function FloatingNavbar() {
           <div className="flex items-center space-x-8">
             {/* Logo */}
             <Link href="/" className="flex sm:flex">
-              <Image width={50} height={50} src={"/Logo.png"} alt="Logo" />
+              <Image width={50} height={50} src={"/logo.png"} alt="Logo" />
             </Link>
 
             {/* Navigation Items */}
@@ -60,9 +72,17 @@ export default function FloatingNavbar() {
             {/* Avatar with Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full p-0"
+                >
                   <Avatar className="w-8 h-8 ring-2 ring-white shadow-sm cursor-pointer">
-                    <AvatarImage src={user?.picture || "/placeholder.svg?height=32&width=32"} alt="Profile" />
+                    <AvatarImage
+                      src={
+                        user?.picture || "/placeholder.svg?height=32&width=32"
+                      }
+                      alt="Profile"
+                    />
                     <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs">
                       {getUserInitials()}
                     </AvatarFallback>
@@ -77,7 +97,9 @@ export default function FloatingNavbar() {
                         <p className="font-medium">
                           {user?.given_name} {user?.family_name}
                         </p>
-                        <p className="w-[200px] truncate text-sm text-muted-foreground">{user?.email}</p>
+                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
@@ -116,7 +138,13 @@ export default function FloatingNavbar() {
           <div className="flex items-center justify-between">
             {/* Logo - visible on mobile */}
             <Link href="/" className="flex items-center justify-center ml-3">
-              <Image width={40} height={40} src={"/Logo.png"} alt="Logo" className="rounded-lg" />
+              <Image
+                width={40}
+                height={40}
+                src={"/logo.png"}
+                alt="Logo"
+                className="rounded-lg"
+              />
             </Link>
 
             {/* Navigation Icons - visible on mobile */}
@@ -136,9 +164,17 @@ export default function FloatingNavbar() {
             {/* Avatar with Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full p-0"
+                >
                   <Avatar className="w-8 h-8 ring-2 ring-white shadow-sm cursor-pointer">
-                    <AvatarImage src={user?.picture || "/placeholder.svg?height=32&width=32"} alt="Profile" />
+                    <AvatarImage
+                      src={
+                        user?.picture || "/placeholder.svg?height=32&width=32"
+                      }
+                      alt="Profile"
+                    />
                     <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs">
                       {getUserInitials()}
                     </AvatarFallback>
@@ -153,7 +189,9 @@ export default function FloatingNavbar() {
                         <p className="font-medium">
                           {user?.given_name} {user?.family_name}
                         </p>
-                        <p className="w-[200px] truncate text-sm text-muted-foreground">{user?.email}</p>
+                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
@@ -186,5 +224,5 @@ export default function FloatingNavbar() {
         </div>
       </nav>
     </>
-  )
+  );
 }
