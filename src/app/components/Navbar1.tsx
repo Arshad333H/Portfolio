@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs"
 import { LoginLink, RegisterLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components"
+import Image from "next/image"
 
 export default function FloatingNavbar() {
   const { user, isAuthenticated } = useKindeAuth()
@@ -25,7 +26,7 @@ export default function FloatingNavbar() {
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!user) return "U"
+    if (!user) return "AR"
     const firstName = user.given_name || ""
     const lastName = user.family_name || ""
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
@@ -34,12 +35,12 @@ export default function FloatingNavbar() {
   return (
     <>
       {/* Desktop Floating Navbar */}
-      <nav className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 hidden md:block">
+      <nav className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 hidden sm:block ">
         <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-full px-6 py-3 shadow-lg shadow-black/5">
           <div className="flex items-center space-x-8">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <img className=" invert" src="/logo.png" alt="Logo" />
+            <Link href="/" className="flex sm:flex">
+              <Image width={50} height={50} src={"/Logo.png"} alt="Logo" />
             </Link>
 
             {/* Navigation Items */}
@@ -111,11 +112,11 @@ export default function FloatingNavbar() {
 
       {/* Mobile Floating Navbar */}
       <nav className="fixed top-4 left-4 right-4 z-50 md:hidden">
-        <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-2xl px-4 py-3 shadow-lg shadow-black/5">
+        <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-2xl px-3 py-3 shadow-lg shadow-black/5">
           <div className="flex items-center justify-between">
             {/* Logo - visible on mobile */}
-            <Link href="/" className="flex items-center space-x-2">
-              <img className="invert w-8 h-8" src="/logo.png" alt="Logo" />
+            <Link href="/" className="flex items-center justify-center ml-3">
+              <Image width={40} height={40} src={"/Logo.png"} alt="Logo" className="rounded-lg" />
             </Link>
 
             {/* Navigation Icons - visible on mobile */}

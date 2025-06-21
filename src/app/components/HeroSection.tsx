@@ -1,3 +1,4 @@
+"use client"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,22 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+const RESUME_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000/resume.pdf"
+    : "https://portfolio-mpqc.vercel.app/resume.pdf";
+
 export default function HomePage() {
+  const downloadResume = (url: string) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Arshad_Shareef_Resume.pdf"; // optional: suggest filename
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen px-6">
       <div className="text-center max-w-5xl mx-auto">
@@ -97,6 +113,9 @@ export default function HomePage() {
             </Button>
           </Link>
           <Button
+            onClick={() => {
+              downloadResume(RESUME_URL);
+            }}
             variant="outline"
             size="lg"
             className="border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg font-semibold bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-105"
