@@ -9,7 +9,9 @@ const layout = async ({
 }>) => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  
+  if (!user || user.email !== "skmohammedarshad@gmail.com") {
+    redirect("/");
+  }
 
   return <div className="w-full max-w-6xl md:mx-auto">{children}</div>;
 };
