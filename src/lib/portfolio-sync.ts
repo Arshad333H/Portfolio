@@ -77,7 +77,7 @@ export class PortfolioSyncService {
       }))
     } catch (error) {
       console.error("Error fetching experiences from LinkedIn:", error)
-      throw new Error(`Failed to fetch LinkedIn experiences: ${error.message}`)
+      throw new Error(`Failed to fetch LinkedIn experiences: ${error}`)
     }
   }
 
@@ -103,7 +103,7 @@ export class PortfolioSyncService {
       }))
     } catch (error) {
       console.error("Error fetching skills from LinkedIn:", error)
-      throw new Error(`Failed to fetch LinkedIn skills: ${error.message}`)
+      throw new Error(`Failed to fetch LinkedIn skills: ${error}`)
     }
   }
 
@@ -135,7 +135,7 @@ export class PortfolioSyncService {
       }))
     } catch (error) {
       console.error("Error fetching certifications from LinkedIn:", error)
-      throw new Error(`Failed to fetch LinkedIn certifications: ${error.message}`)
+      throw new Error(`Failed to fetch LinkedIn certifications: ${error}`)
     }
   }
 
@@ -153,7 +153,7 @@ export class PortfolioSyncService {
         await this.makeRequest("/people/~:(id)")
         console.log("LinkedIn API connection successful")
       } catch (error) {
-        throw new Error(`LinkedIn API connection failed: ${error.message}`)
+        throw new Error(`LinkedIn API connection failed: ${error}`)
       }
 
       // Get LinkedIn data
