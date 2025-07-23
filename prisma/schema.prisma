@@ -33,16 +33,51 @@ enum ProjectDomain {
   DS
 }
 
-model Certificate {
-  id             String   @id @default(cuid())
-  title          String
-  organization   String
-  issueDate      DateTime?
-  expirationDate DateTime?
-  credentialUrl  String?
-  logoUrl        String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model Experience {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String?
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("experiences")
+}
 
-  @@map("certifications")
+model Skill {
+  id           String   @id @default(cuid())
+  name         String
+  endorsements Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("skills")
+}
+
+model Certificate {
+  id            String   @id @default(cuid())
+  name          String
+  organization  String
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  credentialId  String?
+  credentialUrl String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("certificates")
+}
+
+model SyncStatus {
+  id         String   @id @default("single")
+  lastSyncAt DateTime?
+  
+  @@map("sync_status")
 }
