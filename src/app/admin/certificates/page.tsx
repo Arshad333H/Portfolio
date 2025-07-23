@@ -15,7 +15,7 @@ export default function AdminSync() {
     setLoading(false);
   };
 
-  if (!isAuthenticated || user?.email !== "your-admin-email@example.com") {
+  if (!isAuthenticated || user?.email !== "skmohammedarshad333@gmail.com") {
     return <p>Access Denied</p>;
   }
 
