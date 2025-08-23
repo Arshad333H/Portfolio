@@ -8,13 +8,13 @@ import {
   Zap,
   Bot,
   Code2,
-  Download,
   Github,
   Linkedin,
   Twitter,
   Instagram,
   Mail,
   Globe,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -24,20 +24,9 @@ const RESUME_URL =
     : "https://portfolio-mpqc.vercel.app/resume.pdf";
 
 export default function HomePage() {
-  const downloadResume = (url: string) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "Arshad_Shareef_Resume.pdf"; // optional: suggest filename
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen px-6">
       <div className="text-center max-w-5xl mx-auto">
-        {/* Combined Welcome & Professional Introduction */}
         <div className="mb-8">
           <p className="text-lg text-gray-700 mb-4">
             👋 Hello, I'm{" "}
@@ -66,7 +55,6 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Badge */}
         <div className="mb-8 inline-flex items-center">
           <Badge
             variant="secondary"
@@ -78,7 +66,6 @@ export default function HomePage() {
           </Badge>
         </div>
 
-        {/* Tech Stack Pills */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           {[
             { name: "Python", icon: "🐍" },
@@ -101,7 +88,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           <Link href={"/projects"}>
             <Button
@@ -112,20 +98,23 @@ export default function HomePage() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Button
-            onClick={() => {
-              downloadResume(RESUME_URL);
-            }}
-            variant="outline"
-            size="lg"
-            className="border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg font-semibold bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-105"
+          <Link
+            href={RESUME_URL}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Download className="mr-2 h-5 w-5" />
-            Download Resume
-          </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg font-semibold bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-105"
+            >
+              
+              <FileText className=" h-5 w-5"/>
+              View Resume
+            </Button>
+          </Link>
         </div>
 
-        {/* Social Media Section */}
         <div className="mb-12">
           <h3 className="text-2xl font-semibold text-gray-800 mb-6">
             Connect With Me
@@ -183,7 +172,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-3">
@@ -208,7 +196,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Decorative Elements */}
         <div className="flex justify-center space-x-8 opacity-40">
           <div className="w-3 h-3 bg-blue-400 rounded-full animate-ping"></div>
           <div className="w-3 h-3 bg-purple-400 rounded-full animate-ping delay-300"></div>
@@ -216,7 +203,6 @@ export default function HomePage() {
           <div className="w-3 h-3 bg-green-400 rounded-full animate-ping delay-1000"></div>
         </div>
 
-        {/* Floating AI Icons */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <Bot className="absolute top-1/4 left-10 h-6 w-6 text-blue-400/30 animate-bounce delay-500" />
           <Brain className="absolute top-1/3 right-16 h-7 w-7 text-purple-400/30 animate-bounce delay-1000" />
