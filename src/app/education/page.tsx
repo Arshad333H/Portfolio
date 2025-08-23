@@ -10,7 +10,7 @@ const Education = () => {
       institution: "Sree Dattha Institute of Engineering and Science",
       degree: "Bachelor of Technology (B.Tech)",
       field: "Computer Science",
-      duration: "2021 - Present",
+      duration: "2022 - Present",
       location: "Ibrahimpatnam, Hyderabad",
       description:
         "Currently pursuing B.Tech in Computer Science with focus on software development, algorithms, and modern technologies.",
@@ -22,7 +22,7 @@ const Education = () => {
       institution: "Narayana Junior College",
       degree: "Intermediate",
       field: "MPC (Maths, Physics, Chemistry)",
-      duration: "2019 - 2021",
+      duration: "2020 - 2022",
       location: "Dilsuknagar, Hyderabad",
       description: "Completed Intermediate education with strong foundation in Mathematics, Physics, and Chemistry.",
       status: "Completed",
@@ -33,7 +33,7 @@ const Education = () => {
       institution: "Oxford Grammar High School",
       degree: "Secondary Education",
       field: "Grade 9-10",
-      duration: "2017 - 2019",
+      duration: "2018 - 2020",
       location: "Hyderabad",
       description:
         "Strengthened foundation in science and mathematics while participating in various academic and co-curricular activities.",
@@ -45,7 +45,7 @@ const Education = () => {
       institution: "Ravindra Bharathi School",
       degree: "Primary & Middle School",
       field: "Grade 1-8",
-      duration: "2009 - 2017",
+      duration: "2010 - 2018",
       location: "Dilsuknagar, Hyderabad",
       description:
         "Developed early interest in STEM subjects and built strong academic foundation during formative years.",
